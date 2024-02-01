@@ -147,5 +147,15 @@ namespace SQLiteDataGridView
             }
             catch (Exception ex) { }
         }
+
+        private void dataGridView1_RowValidating(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            //lblChangedatagrid.Text = "RowValidating " + dataGridView1.Rows[e.RowIndex].Cells[0].Value;
+        }
+
+        private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            lblChangedatagrid.Text = "CellEndEdit" + dataGridView1.Rows[e.RowIndex].Cells[0].Value;
+        }
     }
 }
