@@ -34,7 +34,7 @@ namespace SQLiteDataGridView
                 return;
             filepath = saveFileDialog1.FileName;
 
-            if (!File.Exists(filepath))
+            //if (!File.Exists(filepath))
             {
                 //CREATE DB
                 SQLiteConnection.CreateFile(filepath);
@@ -106,6 +106,46 @@ namespace SQLiteDataGridView
         public void ConnectionClose()
         {
             Connect.Close();
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            var form = new Form1();
+            form.ShowDialog();
+        }
+
+        private void dataGridView1_RowValidated(object sender, DataGridViewCellEventArgs e)
+        {
+            
+        }
+
+        private void dataGridView1_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+        {
+            
+        }
+
+        private void dataGridView1_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            //!!!!!!!!!!!!!!!!!!!!!!!!!!
+            try
+            {
+                lblChangedatagrid.Text="UserDeletingRow " + dataGridView1.Rows[e.Row.Index].Cells[0].Value;
+            }
+            catch (Exception ex) { }
+        }
+
+        private void dataGridView1_UserAddedRow(object sender, DataGridViewRowEventArgs e)
+        {
+            try
+            {
+                lblChangedatagrid.Text="UserAddedRow " + dataGridView1.Rows[e.Row.Index-1].Cells[0].Value;
+            }
+            catch (Exception ex) { }
         }
     }
 }
