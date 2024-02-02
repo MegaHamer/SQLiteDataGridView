@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace SQLiteDataGridView
 {
@@ -95,6 +96,8 @@ namespace SQLiteDataGridView
             dgv.DataSource = dt;
 
             ConnectionClose();
+
+            dataGridView1.Columns["ID"].ReadOnly = true;
         }
         public void ConnectionOpen()
         {
@@ -108,26 +111,6 @@ namespace SQLiteDataGridView
             Connect.Close();
         }
 
-        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
-        {
-
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            var form = new Form1();
-            form.ShowDialog();
-        }
-
-        private void dataGridView1_RowValidated(object sender, DataGridViewCellEventArgs e)
-        {
-            
-        }
-
-        private void dataGridView1_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
-        {
-            
-        }
 
         private void dataGridView1_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
         {
@@ -135,6 +118,17 @@ namespace SQLiteDataGridView
             try
             {
                 lblChangedatagrid.Text="UserDeletingRow " + dataGridView1.Rows[e.Row.Index].Cells[0].Value;
+
+                var id = dataGridView1.Rows[e.Row.Index].Cells[0].Value;
+
+                //delete row
+                ConnectionOpen();
+                string sqlInsertTable =
+                    "DELETE FROM TABLE_NAME_TEST WHERE ID=" + id + "";
+                cmd = new SQLiteCommand(sqlInsertTable, Connect);
+                cmd.ExecuteNonQuery();
+                ConnectionClose();
+
             }
             catch (Exception ex) { }
         }
@@ -143,19 +137,40 @@ namespace SQLiteDataGridView
         {
             try
             {
-                lblChangedatagrid.Text="UserAddedRow " + dataGridView1.Rows[e.Row.Index-1].Cells[0].Value;
+                lblChangedatagrid.Text = "UserAddedRow " + dataGridView1.Rows[e.Row.Index - 1].Cells[0].Value;
+                dataGridView1.Rows[e.Row.Index-1].Cells[0].Value = e.Row.Index;
+                //insert new row
+                ConnectionOpen();
+                string sqlInsertTable =
+                    "INSERT INTO TABLE_NAME_TEST (ID,NAME) VALUES("+e.Row.Index+",'"+ dataGridView1.Rows[e.Row.Index - 1].Cells[1].Value + "')";
+                cmd = new SQLiteCommand(sqlInsertTable, Connect);
+                cmd.ExecuteNonQuery();
+                ConnectionClose();
+
             }
-            catch (Exception ex) { }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
-        private void dataGridView1_RowValidating(object sender, DataGridViewCellCancelEventArgs e)
-        {
-            //lblChangedatagrid.Text = "RowValidating " + dataGridView1.Rows[e.RowIndex].Cells[0].Value;
-        }
 
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             lblChangedatagrid.Text = "CellEndEdit" + dataGridView1.Rows[e.RowIndex].Cells[0].Value;
+            //MessageBox.Show("CellEndEdit " + dataGridView1.Rows[e.RowIndex].Cells[1].Value);
+
+            var id = dataGridView1.Rows[e.RowIndex].Cells[0].Value;
+            var name = dataGridView1.Rows[e.RowIndex].Cells[1].Value;
+            //update row
+            ConnectionOpen();
+            string sqlInsertTable =
+                "UPDATE TABLE_NAME_TEST SET NAME = '"+name+"' WHERE ID="+id+"";
+            cmd = new SQLiteCommand(sqlInsertTable, Connect);
+            cmd.ExecuteNonQuery();
+            ConnectionClose();
+        }
+
+        private void btnUpdDGV_Click(object sender, EventArgs e)
+        {
+            openSqlInDataGridView(dataGridView2);
         }
     }
 }
